@@ -12,7 +12,7 @@ public interface CityNameSearchService {
 	/**
 	 * @param prefix
 	 * @param autoCompleteLimit
-	 * @return list of auto complete string 
+	 * @return list of auto complete city name 
 	 */
 	public List<String> autocomplete(String prefix, int autoCompleteLimit);
 }

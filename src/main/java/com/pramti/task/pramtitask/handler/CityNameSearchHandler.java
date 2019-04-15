@@ -3,7 +3,6 @@ package com.pramti.task.pramtitask.handler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,15 +25,16 @@ import com.pramti.task.pramtitask.businessobject.Trie;
  */
 @Component
 public class CityNameSearchHandler {
-	private final static Logger LOGGER = LoggerFactory.getLogger(CityNameSearchHandler.class);
-
-	List<String> allString = new ArrayList<String>();
+	private final Logger logger = LoggerFactory.getLogger(CityNameSearchHandler.class);
 
 	@Autowired
 	ResourceLoader resourceLoader;
 
 	Trie trie = null;
 
+	/**
+	 * This post construct method used to load the file on service startup.
+	 */
 	@PostConstruct
 	public void readFileInMemory() {
 		trie = new Trie();
@@ -48,28 +48,21 @@ public class CityNameSearchHandler {
 			while (currentLine != null) {
 				String[] words = currentLine.split(",");
 				trie.insert(words[0]);
-				allString.add(words[0]);
 				currentLine = reader.readLine();
 			}
 		} catch (IOException fileLoadException) {
-			LOGGER.error("Error while loading file {}", fileLoadException);
+			logger.error("Error while loading file {}", fileLoadException);
 		}
 	}
 
-	public void autoComplete(String prefix, int autoCompleteLimit) {
-		System.out.println(System.currentTimeMillis());
-		trie.autocomplete(prefix, autoCompleteLimit);
-		System.out.println(System.currentTimeMillis());
-		searchFromList(prefix, autoCompleteLimit);
-		System.out.println(System.currentTimeMillis());
+	/**
+	 * This method use to search the auto complete city names  
+	 * @param prefix
+	 * @param autoCompleteLimit
+	 * @return autoComplete city name
+	 */
+	public List<String> autoComplete(String prefix, int autoCompleteLimit) {
+		return trie.autocomplete(prefix, autoCompleteLimit);
 	}
 
-	private List<String> searchFromList(final String prefix, int autoCompleteLimit) {
-
-		ArrayList<String> resultString = new ArrayList<>();
-		allString.stream().filter(str -> str.startsWith(prefix)).map(str -> resultString.add(str))
-				.limit(autoCompleteLimit);
-
-		return resultString;
-	}
 }
